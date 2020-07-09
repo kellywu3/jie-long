@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class DeckManager {
-    private static final int BASE_CARDS = 52;
+    public static final int BASE_CARDS = 52;
     private static final int CARDS_PER_SUIT = 13;
     private static final Random random = new Random();
     

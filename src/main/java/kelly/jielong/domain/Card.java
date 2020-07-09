@@ -1,7 +1,6 @@
 package kelly.jielong.domain;
 
 public class Card {
-//    private static final Ra
     private Suit suit;
     private int rank;
     

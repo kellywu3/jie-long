@@ -20,6 +20,7 @@ import kelly.jielong.domain.JieLongGamePlay;
 import kelly.jielong.domain.Player;
 
 @Controller
+@RequestMapping("/api/card")
 public class DeckController {
     private static final Logger logger = LoggerFactory.getLogger(DeckController.class);
     @GetMapping("/randomcard")

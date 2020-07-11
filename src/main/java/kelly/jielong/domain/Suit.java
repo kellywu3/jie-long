@@ -19,4 +19,12 @@ public enum Suit {
         }
         return null;
     }
+    
+    public static Suit asSuit(int i) {
+        if(i < 0 || i > 4) {
+            return null;
+        } else {
+            return Suit.values()[i];
+        }
+    }
 }

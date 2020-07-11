@@ -58,14 +58,27 @@ public class DeckManager {
     public static Card fromShortHand(String card) {
         char s = card.charAt(0);
         char r = card.charAt(1);
-        return new Card(Suit.asSuit(s), charAsRank(r));
+        StringBuilder sb = new StringBuilder()
+            .append(s)
+            .append(r)
+            ;
+        return new Card(sb.toString());
     }
     
     public static Card numToCard(int num) {
-        int s = num / CARDS_PER_SUIT;
+        Suit s = Suit.asSuit(num / CARDS_PER_SUIT);
         int r = (num % CARDS_PER_SUIT);
-        Suit suit = Suit.values()[s];
-        return new Card(suit, r);
+        return new Card(cardNameFrom(s, r));
+    }
+    
+    public static String cardNameFrom(Suit suit, int rank) {
+        char s = suit.asChar();
+        char r = DeckManager.rankAsChar(rank);
+        StringBuilder sb = new StringBuilder()
+                .append(s)
+                .append(r)
+                ;
+        return sb.toString();
     }
     
     public static int cardToNum(Card card) {
@@ -74,6 +87,16 @@ public class DeckManager {
         return suitNum + rank;
     }
     
+    /**
+     * Converts a rank number to a char that represents the rank.
+     * * A = ace
+     * * T = ten
+     * * J = jack
+     * * Q = queen
+     * * K = king
+     * @param rank
+     * @return
+     */
     public static char rankAsChar(int rank) {
         switch(rank) {
         case 13 :

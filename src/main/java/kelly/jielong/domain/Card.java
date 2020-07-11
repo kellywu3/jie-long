@@ -3,10 +3,16 @@ package kelly.jielong.domain;
 public class Card {
     private Suit suit;
     private int rank;
+    private String cardName;
     
-    public Card(Suit suit, int rank) {
-        this.suit = suit;
-        this.rank = rank;
+    public Card(String cardName) {
+        this.cardName = cardName;
+        this.suit = Suit.asSuit(cardName.charAt(0));
+        this.rank = DeckManager.charAsRank(cardName.charAt(1));
+    }
+
+    public String getCardName() {
+        return cardName;
     }
 
     public Suit getSuit() {

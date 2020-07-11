@@ -8,14 +8,9 @@ export default {
     name: 'PokerCard',
 
     props: {
-        rank: {
+        cardName: {
             type: String,
-            default: 'A'
-        },
-
-        suit: {
-            type: String,
-            default: 'H'
+            default: 'HA'
         }
     },
 

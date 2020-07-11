@@ -51,15 +51,15 @@ public class DeckManagerTest {
     
     @Test
     public void testCardToNum() {
-        Assertions.assertEquals(new Card(Suit.HEART, 0), DeckManager.numToCard(0));
-        Assertions.assertEquals(52, DeckManager.cardToNum(new Card(Suit.JOKER, 0)));
-        Assertions.assertEquals(53, DeckManager.cardToNum(new Card(Suit.JOKER, 1)));
+        Assertions.assertEquals(new Card(DeckManager.cardNameFrom(Suit.HEART, 0)), DeckManager.numToCard(0));
+        Assertions.assertEquals(52, DeckManager.cardToNum(new Card(DeckManager.cardNameFrom(Suit.JOKER, 0))));
+        Assertions.assertEquals(53, DeckManager.cardToNum(new Card(DeckManager.cardNameFrom(Suit.JOKER, 1))));
     }
     
     @Test
     public void testNumToCard() {
-        Assertions.assertEquals(new Card(Suit.JOKER, 0), DeckManager.numToCard(52));
-        Assertions.assertEquals(new Card(Suit.JOKER, 1), DeckManager.numToCard(53));
+        Assertions.assertEquals(new Card(DeckManager.cardNameFrom(Suit.JOKER, 0)), DeckManager.numToCard(52));
+        Assertions.assertEquals(new Card(DeckManager.cardNameFrom(Suit.JOKER, 1)), DeckManager.numToCard(53));
     }
     
     @Test

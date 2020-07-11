@@ -1,33 +1,14 @@
 <template>
   <div id="app">
-    <poker-card v-for="(card, idx) in deck" :key="idx" :suit="card.suit" :rank="card.rank.toString()"></poker-card>
+    <poker-card v-for="(card, idx) in deck" :key="idx" :cardName="card.cardName"></poker-card>
     <br/>
     <button v-on:click="fetchRandomDeck()">fetch</button>
     <hr/>
-    <PokerCard v-bind:suit="suit" v-bind:rank="rank"/>
+    <poker-card v-bind:cardName="cardName"/>
     <hr/>
-    rank:
-    <input type="text" v-model="rank"/>
-    <br/>
-    suit:
-    <input type="text" v-model="suit"/>
-
+    Card Name:
+    <input type="text" v-model="cardName"/>
     <hr/>
-    <!--
-    <PokerCard class="card-group" 
-      v-for="(card, idx) in cards" 
-      v-bind:style="{'z-index': 100-idx}"
-      v-bind:key="idx" v-bind:suit="card.suit" v-bind:rank="card.rank"
-    />
-    -->
-    <hr/>
-        <ul>
-          <li v-for="(card, idx) in cards" v-bind:key="idx">
-            <PokerCard v-bind:suit="card.suit" v-bind:rank="card.rank"/>
-            <br/>
-             <!-- {{ card.suit }} - {{ card.rank }} -->
-          </li>
-        </ul>
   </div>
 </template>
 
@@ -43,20 +24,11 @@ export default {
 
   data() {
     return {
-      rank: 'ace',
-      suit: 'heart',
+      cardName: 'HA',
 
       deck: [
-        {suit: 'spade', rank: '5'}, 
-        {suit:'heart', rank: '4'}
-      ],
-
-      cards: [
-        {suit: 'spade', rank: '5'},
-        {suit: 'heart', rank: '4'},
-        {suit: 'diamond', rank: '9'},
-        {suit: 'joker'},
-        {suit: 'back'}
+        {cardName: 'S5'}, 
+        {cardName:'H4'}
       ]
     };
   },

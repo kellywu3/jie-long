@@ -1,7 +1,11 @@
 package kelly.jielong.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Card {
+    @JsonIgnore
     private Suit suit;
+    @JsonIgnore
     private int rank;
     private String cardName;
     

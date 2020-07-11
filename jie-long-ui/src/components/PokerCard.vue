@@ -1,5 +1,5 @@
 <template>
-    <div class="card" v-bind:style="updatePosition">
+    <div class="card" v-bind:style="dynamicPosition">
     </div>
 </template>
 
@@ -16,109 +16,66 @@ export default {
 
     data() {
         return {
-            offsetX: -1,
-            offsetY: -1,
-            rankNum: 0,
-            suitNum: 0
+            
         };
     },
 
     computed: {
-        updatePosition() {
+        dynamicPosition() {
+            const offsetX = - this.rankNum * 98.46 - 1;
+            const offsetY = - this.suitNum * 136.4 - 1;
             return {
-                'background-position': `${this.offsetX}px ${this.offsetY}px`
+                'background-position': `${offsetX}px ${offsetY}px`
             };
+        },
+
+        rankNum() {
+            return this.charToRankNum(this.cardName.charAt(1));
+        },
+
+        suitNum() {
+            return this.charToSuitNum(this.cardName.charAt(0));
         }
     },
 
     methods: {
-        updateRankNum() {
-            let rank = this.rank.toLowerCase();
+        charToRankNum(c = 'a') {
+            let rank = c.toLowerCase();
             switch(rank) {
                 case 'a':
                 case 'ace':
-                    this.rankNum = 0;
-                    break;
+                    return 0;
                 case 't':
-                case 'ten':
-                    this.rankNum = 9;
-                    break;
+                    return 9;
                 case 'j':
-                case 'jack':
-                    this.rankNum = 10;
-                    break;
+                    return 10;
                 case 'q':
-                case 'queen':
-                    this.rankNum = 11;
-                    break;
+                    return 11;
                 case 'k':
-                case 'king':
-                    this.rankNum = 12;
-                    break;
+                    return 12;
                 default:
-                    this.rankNum = rank - 1;
+                    return rank - 1;
             }
         },
 
-        updateSuitNum() {
-            let suit = this.suit.toLowerCase();
+        charToSuitNum(c = 'h') {
+            let suit = c.toLowerCase();
             switch(suit) {
                 case 'h':
-                case 'heart':
-                    this.suitNum = 0;
-                    break;
+                    return 0;
                 case 's':
-                case 'spade':
-                    this.suitNum = 1;
-                    break;
+                    return 1;
                 case 'd':
-                case'diamond':
-                    this.suitNum = 2;
-                    break;
+                    return 2;
                 case 'c':
-                case 'clover':
-                case 'club':
-                    this.suitNum = 3;
-                    break;
-                case 'b':
-                case 'back':
-                    this.suitNum = 4;
-                    this.rankNum = 0;
-                    break;
-                case 'j':
-                case 'joker':
-                    this.suitNum = 4;
-                    this.rankNum = 1;
-                    break;
+                    return 3;
+                case 'z':
+                    return 4;
                 default:
-                    this.suitNum = suit - 1;
+                    return suit - 1;
             }
-        },
-
-        recalculateOffset() {
-            this.offsetX = - this.rankNum * 98.46 - 1;
-            this.offsetY = - this.suitNum * 136.4 - 1;
-        }
-    },
-
-    watch: {
-        rank() {
-            console.log("rank changed", this.rank);
-            this.updateRankNum();
-            this.recalculateOffset();
         }
 
-        , suit() {
-            console.log("suit changed", this.suit);
-            this.updateSuitNum();
-            this.recalculateOffset();
-        }
-    },
-
-    mounted() {
-        this.updateRankNum();
-        this.updateSuitNum();
-        this.recalculateOffset();
     }
 }
 </script>

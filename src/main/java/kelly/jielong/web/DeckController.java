@@ -1,10 +1,12 @@
 package kelly.jielong.web;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import kelly.jielong.domain.Card;
 import kelly.jielong.domain.DeckManager;
+import kelly.jielong.domain.JieLongGame;
 import kelly.jielong.domain.JieLongGamePlay;
 import kelly.jielong.domain.Player;
 
@@ -23,6 +26,10 @@ import kelly.jielong.domain.Player;
 @RequestMapping("/api/card")
 public class DeckController {
     private static final Logger logger = LoggerFactory.getLogger(DeckController.class);
+    
+    @Autowired
+    private JieLongGame jieLongGame;
+    
     @GetMapping("/randomcard")
     @ResponseBody
 	public Card generateRandomCard() {
@@ -44,15 +51,14 @@ public class DeckController {
         return DeckManager.generateRandomDeck(jokers);
     }
     
-    @GetMapping("/playerhands")
+    @GetMapping("/jie-long/{gameId}/{playerId}")
     @ResponseBody
-    public LinkedHashMap<Player, ArrayList<Card>> generatePlayerHands() {
-        Player[] players = new Player[4];
-        for(int i = 0; i < players.length; i++) {
-            players[i] = new Player(i, Integer.toString(i));
-        }
-        JieLongGamePlay game = new JieLongGamePlay(players);
+    public Collection<Card> playerCards(
+        @PathVariable Integer gameId,
+        @PathVariable Integer playerId
+    ) {
+        logger.info("generatePlayerHands: {}, {}", gameId, playerId);
         logger.info("generate player hands");
-        return game.getPlayerHands();
+        return jieLongGame.getPlayerCards(gameId, playerId);
     }
 }

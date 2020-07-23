@@ -1,5 +1,14 @@
 <template>
   <div id="app">
+    <poker-card v-for="(card, idx) in jieLongHand" :key="`jielong-${idx}`" :cardName="card.cardName"></poker-card>
+  
+    
+    <br/>
+    <input type="number" v-model="gameId"/>
+    <input type="number" v-model="playerId"/>
+    <button v-on:click="fetchJieLong()">Jie-Long</button>
+    <hr/>
+    
     <poker-card v-for="(card, idx) in deck" :key="idx" :cardName="card.cardName"></poker-card>
     <br/>
     <button v-on:click="fetchRandomDeck()">fetch</button>
@@ -25,6 +34,9 @@ export default {
   data() {
     return {
       cardName: 'HA',
+      gameId: 0,
+      playerId: 0,
+      jieLongHand: [],
 
       deck: [
         {cardName: 'S5'}, 
@@ -32,18 +44,28 @@ export default {
       ]
     };
   },
-
+  
   methods: {
     fetchRandomDeck() {
       const self = this;
       const url = 'http://localhost:8081/api/card/randomdeck';
       console.log('about to fetch', url);
-      axios.get(url).then((response) => {
-        console.log('it works!', response.data);
+      axios.get(url)
+      .then((response) => {
+        console.log('fetch Random Deck', response.data);
         self.deck = response.data;
       }).catch(err => {
         console.log('got error', err);
       });
+    },
+    
+    fetchJieLong() {
+        const self = this;
+        const url = 'http://localhost:8081/api/card/jie-long/' + self.gameId + '/' + self.playerId;
+        axios.get(url).then(response => {
+            console.log('fetch Jie Long', response);
+            self.jieLongHand = response.data;
+        });
     }
   },
 
@@ -65,9 +87,5 @@ export default {
 
 .card-group {
   margin-right: -50px;
-}
-
-.card-group-two {
-
 }
 </style>

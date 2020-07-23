@@ -1,44 +1,103 @@
 package kelly.jielong.domain;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 
 public class JieLongGamePlay {
-    private LinkedHashMap<Player, ArrayList<Card>> playerHands;
+    private static final int CARDS_ON_TABLE_IDX = -1;
+    private static final int CARDS_IN_DECK_IDX = -2;
+    // Keeps track of each card's ownership and the cards on the table
+    // -1 = on table
+    // 0-5 = player hand
+    // -2 = in deck
+    private int[] cards;
+    private Player[] players;
+    private int gameId;
     
-    public JieLongGamePlay(Player[] players) {
-        playerHands = new LinkedHashMap<>();
-        dealCards(players);
+    public JieLongGamePlay(Player[] players, int gameId) {
+        cards = new int[DeckManager.BASE_CARDS];
+        this.players = players;
+        this.gameId = gameId;
+        dealCards();
 
     }
     
-    private void dealCards(Player[] players) {
+    private void dealCards() {
         int numbOfPlayers = players.length;
         Card[] deck = DeckManager.generateRandomDeck(0);
-        ArrayList<Card>[] hands =  new ArrayList[numbOfPlayers];
-        for(int i = 0; i < numbOfPlayers; i++) {
-            hands[i] = new ArrayList<>();
-            playerHands.put(players[i], hands[i]);
-        }
-        for(int i = 0; i < DeckManager.BASE_CARDS; i++) {
-            hands[i % numbOfPlayers].add(deck[i]);
+//        ArrayList<Card>[] hands =  new ArrayList[numbOfPlayers];
+        
+        int playeridx = 0;
+        for(int cardidx = 0; cardidx < deck.length; cardidx++) {
+            int cardnum = DeckManager.cardToNum(deck[cardidx]);
+            cards[cardnum] = playeridx;
+            playeridx++;
+            playeridx = playeridx % numbOfPlayers;
         }
     }
     
-    public boolean playCard(Player player, Card card) {
+    private int findPlayerIdx(Player p) {
+        for(int i = 0; i < players.length; i++) {
+            if(players[i].equals(p)) {
+                return i;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+    
+    public Collection<Card> getCardsByIdx(int idx) {
+        ArrayList<Card> result = new ArrayList<>();
+        for(int i = 0; i < cards.length; i++) {
+            if(cards[i] == idx) {
+                result.add(DeckManager.numToCard(i));
+            }
+        }
+        return result;        
+    }
+    
+    public Collection<Card> getCardsOnTable() {
+        return getCardsByIdx(CARDS_ON_TABLE_IDX);
+    }
+    
+    public Collection<Card> getPlayerDeck(Player p) {
+        int idx = findPlayerIdx(p);
+        return getCardsByIdx(idx);
+    }
+    
+    private boolean validatePlay(Card card) {
+        int cardNum = DeckManager.cardToNum(card);
+        int cardRank = card.getRank();
+        if(cardRank < 6) {
+            if(cards[cardNum + 1] == CARDS_ON_TABLE_IDX) {
+                return true;
+            }
+        } else if(cardRank > 6) {
+            if(cards[cardNum - 1] == CARDS_ON_TABLE_IDX) {
+                return true;
+            }
+        } else {
+            return true;
+        }
         return false;
     }
     
-    public LinkedHashMap<Player, ArrayList<Card>> getPlayerHands() {
-        return playerHands;
+    public boolean playCard(Player player, Card card) {
+        // check if player has card
+        int idx = findPlayerIdx(player);
+        int cardNum = DeckManager.cardToNum(card);
+        if(idx != cards[cardNum]) {
+            return false;
+        }
+        // check if card can be played
+        if(validatePlay(card) == false) {
+            return false;
+        }
+        // update card ownership
+        cards[cardNum] = CARDS_ON_TABLE_IDX;
+        return true;
     }
 
-    public ArrayList<Card> getPlayerHand(Player player) {
-        return playerHands.get(player);
-    }
-
-    @Override
-    public String toString() {
-        return "JieLongGamePlay [playerHands=" + playerHands + "]";
+    public int getGameId() {
+        return gameId;
     }
 }

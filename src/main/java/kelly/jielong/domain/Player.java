@@ -13,6 +13,10 @@ public class Player {
         this.playerID = playerID;
         this.name = name;
     }
+    
+    public int getPlayerID() {
+        return playerID;
+    }
 
     @Override
     public int hashCode() {

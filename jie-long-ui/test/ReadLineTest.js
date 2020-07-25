@@ -1,30 +1,5 @@
-const readline = require('readline');
-const fs = require('fs');
+const util = require('./FileUtil');
 
-function readLineFromFile(file) {
-    const readInterface = readline.createInterface({
-        input: fs.createReadStream(file),
-        output: null,
-        console: false
-    });
-
-    return readInterface;
-}
-
-function extractTo(label, data) {
-    return (line) => {
-        console.log('from', label, line);
-        if(line != null) {
-            const parts = line.split(' ');
-
-            if(parts.length == 2) {
-                const k = parts[0];
-                const v = parts[1];
-                data[k] = Number(v);
-            }
-        }
-    };
-}
 // rif1.on('line', function(line) {
 //     console.log('from f1:', line);
 
@@ -111,10 +86,10 @@ const parsedData = [];
 let processedCnt = 0;
 filesToBeProcessed.forEach((f, idx) => {
     console.log(idx, f);
-    const rlff = readLineFromFile(`${dir}/${f}`);
+    const rlff = util.readLineFromFile(`${dir}/${f}`);
     const data = {};
     parsedData.push(data);
-    rlff.on('line', extractTo(f, data));
+    rlff.on('line', util.extractTo(f, data));
     rlff.on('close', () => { 
         processedCnt++;
         if (processedCnt === filesToBeProcessed.length) {

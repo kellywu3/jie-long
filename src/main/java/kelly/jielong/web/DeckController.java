@@ -61,4 +61,17 @@ public class DeckController {
         logger.info("generate player hands");
         return jieLongGame.getPlayerCards(gameId, playerId);
     }
+    
+    @PostMapping("/jie-long/{gameId}/{playerId}/{card}")
+    @ResponseBody
+    public boolean playCard(
+            @PathVariable int gameId
+            ,@PathVariable int playerId
+            ,@PathVariable Card card) 
+    {
+        JieLongGamePlay gp = jieLongGame.findGameById(gameId);
+        Player p = gp.findPlayerByIdx(playerId);
+        boolean result = gp.playCard(p, card);
+        return result;
+    }
 }

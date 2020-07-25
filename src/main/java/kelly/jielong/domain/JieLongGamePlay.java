@@ -45,6 +45,15 @@ public class JieLongGamePlay {
         return Integer.MIN_VALUE;
     }
     
+    public Player findPlayerByIdx(int idx) {
+        for(int i = 0; i < players.length; i++) {
+            if(players[i].getPlayerID() == idx) {
+                return players[i];
+            }
+        }
+        return null;
+    }
+    
     public Collection<Card> getCardsByIdx(int idx) {
         ArrayList<Card> result = new ArrayList<>();
         for(int i = 0; i < cards.length; i++) {

@@ -1,30 +1,4 @@
-const readline = require('readline');
-const fs = require('fs');
-
-function readLineFromFile(file) {
-    const readInterface = readline.createInterface({
-        input: fs.createReadStream(file),
-        output: null,
-        console: false
-    });
-
-    return readInterface;
-}
-
-function extractTo(label, data) {
-    return (line) => {
-        console.log('from', label, line);
-        if(line != null) {
-            const parts = line.split(' ');
-
-            if(parts.length == 2) {
-                const k = parts[0];
-                const v = parts[1];
-                data[k] = Number(v);
-            }
-        }
-    };
-}
+const util = require('./FileUtil');
 
 function mergeAllResults(allResults) {
     const merged = {};
@@ -52,9 +26,9 @@ const allResults = [];
 
 const readFilePromise = (file) => {
     return new Promise((resolve) => {
-        const rif = readLineFromFile(`${dir}/${file}`);
+        const rif = util.readLineFromFile(`${dir}/${file}`);
         const data = {};
-        rif.on('line', extractTo(file, data));
+        rif.on('line', util.extractTo(file, data));
 
         rif.on('close', () => {
             resolve(data);

@@ -37,6 +37,13 @@ public class DeckController {
 	    return DeckManager.obtainRandomCard(0);
 	}
     
+    @GetMapping("/jie-long/{gameId}/players")
+    @ResponseBody
+    public Player[] getPlayers(@PathVariable int gameId) {
+        JieLongGamePlay game = jieLongGame.findGameById(gameId);
+        return game.getPlayers();
+    }
+    
     @GetMapping("/randomdeck")
     @ResponseBody
     public Card[] generateRandomDeck(@RequestParam(name = "j", required = false) Integer jokers) {

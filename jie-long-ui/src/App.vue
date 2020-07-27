@@ -1,9 +1,22 @@
 <template>
   <div id="app">
+    Game Id: <input type="number" v-model="gameId"/>
+    <hr/>
+    <div v-for="(cards, idx) in playerCards" :key="idx">
+      <PokerCard v-for="(c, i) in cards" :key="`${idx}-${i}`"
+      :cardName="c.cardName"
+      ></PokerCard>
+    </div>
+
+    {{players}}
+    <br/>
+    {{playerCards}}
+
+    <hr/>
     <poker-card v-for="(card, idx) in jieLongHand" :key="`jielong-${idx}`" :cardName="card.cardName"></poker-card>
   
     
-    <br/>
+    <!-- <br/>
     <input type="number" v-model="gameId"/>
     <input type="number" v-model="playerId"/>
     <button v-on:click="fetchJieLong()">Jie-Long</button>
@@ -17,13 +30,19 @@
     <hr/>
     Card Name:
     <input type="text" v-model="cardName"/>
-    <hr/>
+    <hr/> -->
   </div>
 </template>
 
 <script>
 import PokerCard from './components/PokerCard.vue';
 import axios from 'axios';
+
+const ENDPOINT_PREFIX = 'http://localhost:8081/api/card';
+
+function calcEndPoint(subPath) {
+  return `${ENDPOINT_PREFIX}/${subPath}`;
+}
 
 export default {
   name: 'App',
@@ -37,6 +56,8 @@ export default {
       gameId: 0,
       playerId: 0,
       jieLongHand: [],
+      players: [],
+      playerCards: [],
 
       deck: [
         {cardName: 'S5'}, 
@@ -48,7 +69,7 @@ export default {
   methods: {
     fetchRandomDeck() {
       const self = this;
-      const url = 'http://localhost:8081/api/card/randomdeck';
+      const url = calcEndPoint('/randomdeck');
       console.log('about to fetch', url);
       axios.get(url)
       .then((response) => {
@@ -60,17 +81,44 @@ export default {
     },
     
     fetchJieLong() {
-        const self = this;
-        const url = 'http://localhost:8081/api/card/jie-long/' + self.gameId + '/' + self.playerId;
-        axios.get(url).then(response => {
-            console.log('fetch Jie Long', response);
-            self.jieLongHand = response.data;
-        });
+      const self = this;
+      const url = calcEndPoint('/jie-long/' + self.gameId + '/' + self.playerId);
+      axios.get(url).then(response => {
+        console.log('fetch Jie Long', response);    
+        self.jieLongHand = response.data;
+      });
+    },
+
+    fetchGame() {
+      const playersEndpoint = calcEndPoint(`/jie-long/${this.gameId}/players`);
+      axios.get(playersEndpoint).then(response => {
+        this.players = response.data;
+        const playerIds = this.players.map(p => p.playerId);
+        console.log('Player ID\'s:', playerIds);
+
+        return Promise.all(
+          [-1, ...playerIds].map(id => {
+            const playerHandEndpoint = calcEndPoint(`/jie-long/${this.gameId}/${id}`);
+            console.log('fetching:', playerHandEndpoint);
+            return axios.get(playerHandEndpoint);
+          })
+        );
+      }).then(responses => {
+        this.playerCards = responses.map(r => r.data);
+        console.log('Player Cards:', this.playerCards);
+      });
+    }
+  },
+
+  watch: {
+    gameId() {
+      this.fetchGame();
     }
   },
 
   mounted() {
     // console.log(axios);
+    this.fetchGame();
   }
 }
 </script>

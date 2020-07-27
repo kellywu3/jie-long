@@ -47,7 +47,7 @@ public class JieLongGamePlay {
     
     public Player findPlayerByIdx(int idx) {
         for(int i = 0; i < players.length; i++) {
-            if(players[i].getPlayerID() == idx) {
+            if(players[i].getPlayerId() == idx) {
                 return players[i];
             }
         }
@@ -104,6 +104,10 @@ public class JieLongGamePlay {
         // update card ownership
         cards[cardNum] = CARDS_ON_TABLE_IDX;
         return true;
+    }
+
+    public Player[] getPlayers() {
+        return players;
     }
 
     public int getGameId() {

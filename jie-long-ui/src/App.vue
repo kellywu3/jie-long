@@ -2,20 +2,20 @@
   <div id="app">
     Game Id: <input type="number" v-model="gameId"/>
     <hr/>
-    <div v-for="(cards, idx) in playerCards" :key="idx">
-      <PokerCard v-for="(c, i) in cards" :key="`${idx}-${i}`"
-      :cardName="c.cardName"
-      ></PokerCard>
+    <div v-for="(cards, idx) in playerCards" :key="`playerCard-${idx}`">
+      <PokerHand :seat="idx" :cards="cards" v-on:playcard="handlePlayCard"
+      ></PokerHand>
     </div>
-
+    <hr/>
+    
     {{players}}
     <br/>
     {{playerCards}}
 
+
     <hr/>
     <poker-card v-for="(card, idx) in jieLongHand" :key="`jielong-${idx}`" :cardName="card.cardName"></poker-card>
   
-    
     <!-- <br/>
     <input type="number" v-model="gameId"/>
     <input type="number" v-model="playerId"/>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import PokerCard from './components/PokerCard.vue';
+import PokerHand from './components/PokerHand.vue';
 import axios from 'axios';
 
 const ENDPOINT_PREFIX = 'http://localhost:8081/api/card';
@@ -47,7 +47,7 @@ function calcEndPoint(subPath) {
 export default {
   name: 'App',
   components: {
-      PokerCard
+      PokerHand
   },
 
   data() {
@@ -106,6 +106,18 @@ export default {
       }).then(responses => {
         this.playerCards = responses.map(r => r.data);
         console.log('Player Cards:', this.playerCards);
+      });
+    },
+
+    handlePlayCard(message) {
+      const {seat, cardName} = message;
+      console.log('played!', seat, cardName);
+      const endpoint = calcEndPoint(`/jie-long/${this.gameId}/${seat-1}/${cardName}`)
+      axios.post(endpoint).then(response => {
+        console.log('it worked!', response.data);
+        this.fetchGame();
+      }, err => {
+        console.log(err.message);
       });
     }
   },

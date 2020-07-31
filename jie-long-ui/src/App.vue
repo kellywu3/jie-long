@@ -1,20 +1,21 @@
 <template>
   <div id="app">
-    Game Id: <input type="number" v-model="gameId"/>
-    <hr/>
-    <div v-for="(cards, idx) in playerCards" :key="`playerCard-${idx}`">
-      <PokerHand :seat="idx" :cards="cards" v-on:playcard="handlePlayCard"
-      ></PokerHand>
+    <div class="table">
+        <jie-long-table :cards="playerCards[0]">
+        </jie-long-table>
     </div>
-    <hr/>
-    
-    {{players}}
+    <div v-for="(cards, idx) in playerCards.slice(1)" :key="`playerCard-${idx}`">
+      <poker-hand :seat="idx" :cards="cards" v-on:playcard="handlePlayCard">
+      </poker-hand>
+    </div>    
+    Game Id: <input type="number" v-model="gameId"/>
+    <!-- {{players}}
     <br/>
-    {{playerCards}}
+    {{playerCards}} -->
 
 
-    <hr/>
-    <poker-card v-for="(card, idx) in jieLongHand" :key="`jielong-${idx}`" :cardName="card.cardName"></poker-card>
+    <!-- <hr/>
+    <poker-card v-for="(card, idx) in jieLongHand" :key="`jielong-${idx}`" :cardName="card.cardName"></poker-card> -->
   
     <!-- <br/>
     <input type="number" v-model="gameId"/>
@@ -35,6 +36,7 @@
 </template>
 
 <script>
+import JieLongTable from './components/JieLongTable.vue';
 import PokerHand from './components/PokerHand.vue';
 import axios from 'axios';
 
@@ -47,7 +49,8 @@ function calcEndPoint(subPath) {
 export default {
   name: 'App',
   components: {
-      PokerHand
+    JieLongTable,
+    PokerHand
   },
 
   data() {
@@ -112,7 +115,7 @@ export default {
     handlePlayCard(message) {
       const {seat, cardName} = message;
       console.log('played!', seat, cardName);
-      const endpoint = calcEndPoint(`/jie-long/${this.gameId}/${seat-1}/${cardName}`)
+      const endpoint = calcEndPoint(`/jie-long/${this.gameId}/${seat}/${cardName}`)
       axios.post(endpoint).then(response => {
         console.log('it worked!', response.data);
         this.fetchGame();
@@ -142,7 +145,13 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  }
+
+.table {
+    outline: 4px black;
+    background-color: darkolivegreen;
+    padding-top: 10px;
+    padding-bottom: 4px;
 }
 
 .card-group {

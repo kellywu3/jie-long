@@ -13,6 +13,7 @@ import PokerCard from './PokerCard.vue';
 
 export default {
     name: 'PokerHand',
+    
     components: {
         PokerCard
     },
@@ -30,7 +31,7 @@ export default {
 
 <style scoped>
 .hand {
-  outline: 1px dotted blue;
+  outline: 1px;
   padding: 5px;
 }
 </style>

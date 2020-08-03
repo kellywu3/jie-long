@@ -2,6 +2,7 @@ package kelly.jielong.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Stack;
 
 public class JieLongGamePlay {
     private static final int CARDS_ON_TABLE_IDX = -1;
@@ -13,6 +14,8 @@ public class JieLongGamePlay {
     private int[] cards;
     private Player[] players;
     private int gameId;
+    private GameStatus status;
+    private Stack history;
     
     public JieLongGamePlay(Player[] players, int gameId) {
         cards = new int[DeckManager.BASE_CARDS];
@@ -103,6 +106,11 @@ public class JieLongGamePlay {
         }
         // update card ownership
         cards[cardNum] = CARDS_ON_TABLE_IDX;
+        for(int i=0; i<players.length; i++) {
+            if(players[i]==player) {
+                history.push(new JieLongTurn(i, card));
+            }
+        }
         return true;
     }
 

@@ -1,14 +1,11 @@
 package kelly.jielong.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * Represents a player in the game.
  * @author kelly
  *
  */
 public class Player {
-    @JsonProperty("playerId")
     private int playerId;
     private String name;
     
@@ -16,7 +13,15 @@ public class Player {
         this.playerId = playerId;
         this.name = name;
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getPlayerId() {
         return playerId;
     }

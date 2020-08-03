@@ -36,4 +36,8 @@ public class JieLongGame {
         JieLongGamePlay g = findGameById(id);
         return g.getCardsByIdx(playerid);
     }
+
+    public static HashMap<Integer, JieLongGamePlay> getGames() {
+        return games;
+    }
 }

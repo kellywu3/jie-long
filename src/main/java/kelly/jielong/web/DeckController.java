@@ -1,31 +1,22 @@
 package kelly.jielong.web;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-
+import kelly.jielong.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import kelly.jielong.domain.Card;
-import kelly.jielong.domain.DeckManager;
-import kelly.jielong.domain.JieLongGame;
-import kelly.jielong.domain.JieLongGamePlay;
-import kelly.jielong.domain.Player;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/card")
 public class DeckController {
     private static final Logger logger = LoggerFactory.getLogger(DeckController.class);
+    private SseEmitter jieLongEventEmitter = new SseEmitter();
     
     @Autowired
     private JieLongGame jieLongGame;
@@ -80,5 +71,35 @@ public class DeckController {
         Player p = gp.findPlayerByIdx(playerId);
         boolean result = gp.playCard(p, card);
         return result;
+    }
+
+    @PostMapping("/jie-long/games")
+    @ResponseBody
+    public Map<Integer, JieLongGamePlay> listGames() {
+        return JieLongGame.getGames();
+    }
+
+//    @PostMapping("/jie-long/joingame/{gameId}/{playerId}/{name}")
+//    @ResponseBody
+//    public int joinGame(int gameId, int playerId, String name) {
+//        int seatNum;
+//    }
+
+    @GetMapping("/jie-long/emitter")
+    public SseEmitter getEmitter() {
+        return jieLongEventEmitter;
+    }
+
+    @GetMapping("/jie-long/emitter/test")
+    @ResponseBody
+    public String testEmitter() {
+        SseEmitter.SseEventBuilder seb = SseEmitter.event()
+        .data("hello").id(Long.toString(System.currentTimeMillis()));
+        try {
+            jieLongEventEmitter.send(seb);
+        } catch(IOException e) {
+            logger.info("error", e);
+        }
+        return "OK";
     }
 }

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    Sse message: {{eventMessage}}
     <div class="table">
         <jie-long-table :cards="playerCards[0]">
         </jie-long-table>
@@ -65,7 +66,9 @@ export default {
       deck: [
         {cardName: 'S5'}, 
         {cardName:'H4'}
-      ]
+      ],
+
+      eventMessage: null
     };
   },
   
@@ -112,6 +115,29 @@ export default {
       });
     },
 
+    connectSse(retryDelay) {
+      const self = this;
+      const endpoint = calcEndPoint("/jie-long/emitter");
+      const evtsource = new EventSource(endpoint);
+      evtsource.onmessage = (msg) => {
+        self.eventMessage = msg;
+      }
+
+      evtsource.addEventListener('error', (e) => {
+        console.log("error:", e);
+        evtsource.close();
+        if(retryDelay >= 0) {
+          setTimeout(() => {
+            self.connectSse(retryDelay);
+          }, retryDelay);
+        } else {
+          console.log('Sse disconnected');
+        }
+      });
+      evtsource.addEventListener('event', (e) => console.log("event:", e));
+
+    },
+
     handlePlayCard(message) {
       const {seat, cardName} = message;
       console.log('played!', seat, cardName);
@@ -134,6 +160,7 @@ export default {
   mounted() {
     // console.log(axios);
     this.fetchGame();
+    this.connectSse(5000);
   }
 }
 </script>

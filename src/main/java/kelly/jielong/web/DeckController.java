@@ -9,17 +9,57 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 
 @Controller
 @RequestMapping("/api/card")
 public class DeckController {
     private static final Logger logger = LoggerFactory.getLogger(DeckController.class);
-    private SseEmitter jieLongEventEmitter = new SseEmitter();
+    private HashSet<SseEmitter> emitters = new HashSet<>();
+    private HashSet<SseEmitter> toBeRemoved = new HashSet<>();
     
     @Autowired
     private JieLongGame jieLongGame;
+
+    private synchronized void publishEmitterEvent(SseEmitter.SseEventBuilder event) {
+        emitters.removeAll(toBeRemoved);
+        for(SseEmitter emitter : emitters) {
+            try {
+                emitter.send(event);
+            } catch(IOException e) {
+                logger.info("Publish event error:", e);
+                toBeRemoved.add(emitter);
+            }
+        }
+    }
+
+    private synchronized SseEmitter createEmitter(){
+        SseEmitter emitter = new SseEmitter();
+//        emitter.onError((err) -> {
+//            logger.warn("Emitter error:", err);
+//            toBeRemoved.add(emitter);
+//        });
+
+//        emitter.onTimeout(() -> {
+//            logger.warn("Emitter Timed out");
+//            toBeRemoved.add(emitter);
+//        });
+
+        emitter.onCompletion(() -> {
+            logger.warn("Emitter Completed");
+            toBeRemoved.add(emitter);
+        });
+
+        emitters.add(emitter);
+        return emitter;
+    }
+
+//    private synchronized void removeEmitter(SseEmitter emitter) {
+//        emitters.remove(emitter);
+//    }
     
     @GetMapping("/randomcard")
     @ResponseBody
@@ -86,20 +126,19 @@ public class DeckController {
 //    }
 
     @GetMapping("/jie-long/emitter")
-    public SseEmitter getEmitter() {
-        return jieLongEventEmitter;
+    public SseEmitter getEmitters() {
+        return createEmitter();
     }
 
+    private static int id = 0;
     @GetMapping("/jie-long/emitter/test")
     @ResponseBody
     public String testEmitter() {
         SseEmitter.SseEventBuilder seb = SseEmitter.event()
-        .data("hello").id(Long.toString(System.currentTimeMillis()));
-        try {
-            jieLongEventEmitter.send(seb);
-        } catch(IOException e) {
-            logger.info("error", e);
-        }
-        return "OK";
+            .data("hello-" + id)
+            .id(Integer.toString(id))
+            ;
+        publishEmitterEvent(seb);
+        return "OK" + (id++);
     }
 }

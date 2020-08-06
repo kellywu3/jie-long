@@ -41,7 +41,7 @@ import JieLongTable from './components/JieLongTable.vue';
 import PokerHand from './components/PokerHand.vue';
 import axios from 'axios';
 
-const ENDPOINT_PREFIX = 'http://localhost:8081/api/card';
+const ENDPOINT_PREFIX = '/api/card';
 
 function calcEndPoint(subPath) {
   return `${ENDPOINT_PREFIX}/${subPath}`;
@@ -120,7 +120,8 @@ export default {
       const endpoint = calcEndPoint("/jie-long/emitter");
       const evtsource = new EventSource(endpoint);
       evtsource.onmessage = (msg) => {
-        self.eventMessage = msg;
+        console.log("connectSse received:", msg);
+        self.eventMessage = msg.data;
       }
 
       evtsource.addEventListener('error', (e) => {
@@ -160,7 +161,7 @@ export default {
   mounted() {
     // console.log(axios);
     this.fetchGame();
-    this.connectSse(5000);
+    this.connectSse(50);
   }
 }
 </script>

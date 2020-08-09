@@ -24,38 +24,6 @@ public class DeckController {
     @Autowired
     private JieLongGame jieLongGame;
 
-    private synchronized void publishEmitterEvent(SseEmitter.SseEventBuilder event) {
-        emitters.removeAll(toBeRemoved);
-        for(SseEmitter emitter : emitters) {
-            try {
-                emitter.send(event);
-            } catch(IOException e) {
-                logger.info("Publish event error:", e);
-                toBeRemoved.add(emitter);
-            }
-        }
-    }
-
-    private synchronized SseEmitter createEmitter(){
-        SseEmitter emitter = new SseEmitter();
-//        emitter.onError((err) -> {
-//            logger.warn("Emitter error:", err);
-//            toBeRemoved.add(emitter);
-//        });
-
-//        emitter.onTimeout(() -> {
-//            logger.warn("Emitter Timed out");
-//            toBeRemoved.add(emitter);
-//        });
-
-        emitter.onCompletion(() -> {
-            logger.warn("Emitter Completed");
-            toBeRemoved.add(emitter);
-        });
-
-        emitters.add(emitter);
-        return emitter;
-    }
 
 //    private synchronized void removeEmitter(SseEmitter emitter) {
 //        emitters.remove(emitter);
@@ -124,21 +92,4 @@ public class DeckController {
 //    public int joinGame(int gameId, int playerId, String name) {
 //        int seatNum;
 //    }
-
-    @GetMapping("/jie-long/emitter")
-    public SseEmitter getEmitters() {
-        return createEmitter();
-    }
-
-    private static int id = 0;
-    @GetMapping("/jie-long/emitter/test")
-    @ResponseBody
-    public String testEmitter() {
-        SseEmitter.SseEventBuilder seb = SseEmitter.event()
-            .data("hello-" + id)
-            .id(Integer.toString(id))
-            ;
-        publishEmitterEvent(seb);
-        return "OK" + (id++);
-    }
 }

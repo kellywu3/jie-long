@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    Sse message: {{eventMessage}}
+    <message></message>
     <div class="table">
         <jie-long-table :cards="playerCards[0]">
         </jie-long-table>
@@ -39,19 +39,17 @@
 <script>
 import JieLongTable from './components/JieLongTable.vue';
 import PokerHand from './components/PokerHand.vue';
+import Message from './components/Message.vue';
 import axios from 'axios';
 
-const ENDPOINT_PREFIX = '/api/card';
-
-function calcEndPoint(subPath) {
-  return `${ENDPOINT_PREFIX}/${subPath}`;
-}
+import util from './components/util.js';
 
 export default {
   name: 'App',
   components: {
     JieLongTable,
-    PokerHand
+    PokerHand,
+    Message
   },
 
   data() {
@@ -75,7 +73,7 @@ export default {
   methods: {
     fetchRandomDeck() {
       const self = this;
-      const url = calcEndPoint('/randomdeck');
+      const url = util.calcCardEndPoint('/randomdeck');
       console.log('about to fetch', url);
       axios.get(url)
       .then((response) => {
@@ -88,7 +86,7 @@ export default {
     
     fetchJieLong() {
       const self = this;
-      const url = calcEndPoint('/jie-long/' + self.gameId + '/' + self.playerId);
+      const url = util.calcCardEndPoint('/jie-long/' + self.gameId + '/' + self.playerId);
       axios.get(url).then(response => {
         console.log('fetch Jie Long', response);    
         self.jieLongHand = response.data;
@@ -96,7 +94,7 @@ export default {
     },
 
     fetchGame() {
-      const playersEndpoint = calcEndPoint(`/jie-long/${this.gameId}/players`);
+      const playersEndpoint = util.calcCardEndPoint(`/jie-long/${this.gameId}/players`);
       axios.get(playersEndpoint).then(response => {
         this.players = response.data;
         const playerIds = this.players.map(p => p.playerId);
@@ -104,7 +102,7 @@ export default {
 
         return Promise.all(
           [-1, ...playerIds].map(id => {
-            const playerHandEndpoint = calcEndPoint(`/jie-long/${this.gameId}/${id}`);
+            const playerHandEndpoint = util.calcCardEndPoint(`/jie-long/${this.gameId}/${id}`);
             console.log('fetching:', playerHandEndpoint);
             return axios.get(playerHandEndpoint);
           })
@@ -117,7 +115,7 @@ export default {
 
     connectSse(retryDelay) {
       const self = this;
-      const endpoint = calcEndPoint("/jie-long/emitter");
+      const endpoint = util.calcCardEndPoint("/jie-long/emitter");
       const evtsource = new EventSource(endpoint);
       evtsource.onmessage = (msg) => {
         console.log("connectSse received:", msg);
@@ -136,13 +134,12 @@ export default {
         }
       });
       evtsource.addEventListener('event', (e) => console.log("event:", e));
-
     },
 
     handlePlayCard(message) {
       const {seat, cardName} = message;
       console.log('played!', seat, cardName);
-      const endpoint = calcEndPoint(`/jie-long/${this.gameId}/${seat}/${cardName}`)
+      const endpoint = util.calcCardEndPoint(`/jie-long/${this.gameId}/${seat}/${cardName}`)
       axios.post(endpoint).then(response => {
         console.log('it worked!', response.data);
         this.fetchGame();
@@ -161,7 +158,7 @@ export default {
   mounted() {
     // console.log(axios);
     this.fetchGame();
-    this.connectSse(50);
+    //this.connectSse(50);
   }
 }
 </script>

@@ -1,29 +1,68 @@
 <template>
     <div class="hand">
       <span v-for="(card, idx) in cards" :key="`${seat}-${idx}`"
-        v-on:click="$emit('playcard', {seat, cardName:card.cardName})"
+        v-on:click="handleClick(card.cardName)"
       >
-        <PokerCard :cardName="card.cardName"></PokerCard>
+        <PokerCard :cardName="card.cardName"
+        :playable="isPlayable(card.cardName)"
+        :bugger="`${seat}-${idx}`"
+        ></PokerCard>
       </span>
     </div>
 </template>
 
 <script>
 import PokerCard from './PokerCard.vue';
+import util from './util.js';
 
 export default {
     name: 'PokerHand',
     
     components: {
         PokerCard
-    },
+        },
 
     props: {
         seat: {
             type: Number
         },
         cards: {
-            type: Array
+            type: Array,
+            default: () => []
+        },
+        tableCards: {
+            type: Array,
+            default: () => []
+        }
+    },
+
+    methods: {
+        isPlayable(cardName) {
+            const rank = cardName.charAt(1);
+            if(rank === '7') {
+                return true;
+            }
+
+            let num = util.rankToNum(rank);
+            if(num > 7) {
+                num--;
+            } else if(num < 7) {
+                num++;
+            }
+
+            const suit = cardName.charAt(0);
+            const cardCheck = `${suit}${util.numToRank(num)}`;
+            return this.tableCards.includes(cardCheck);
+        },
+
+        handleClick(cardName) {
+            console.log("click:", cardName);
+            if(this.isPlayable(cardName)) {
+                console.log("Emitting event");
+                this.$emit('playcard', {seat: this.seat, cardName});
+            } else {
+                console.log("You can't play that :(");
+            }
         }
     }
 }

@@ -6,7 +6,11 @@
         </jie-long-table>
     </div>
     <div v-for="(cards, idx) in playerCards.slice(1)" :key="`playerCard-${idx}`">
-      <poker-hand :seat="idx" :cards="cards" v-on:playcard="handlePlayCard">
+      <poker-hand :seat="idx"
+                  :cards="cards"
+                  :tableCards="playerCards[0]"
+                  v-on:playcard="handlePlayCard"
+      >
       </poker-hand>
     </div>    
     Game Id: <input type="number" v-model="gameId"/>

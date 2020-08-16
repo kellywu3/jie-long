@@ -21,6 +21,7 @@ public class JieLongGamePlay {
         cards = new int[DeckManager.BASE_CARDS];
         this.players = players;
         this.gameId = gameId;
+        history = new Stack();
         dealCards();
 
     }

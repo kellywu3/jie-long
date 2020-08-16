@@ -1,5 +1,6 @@
 <template>
-    <div class="card" v-bind:style="dynamicPosition">
+    <div class="card" v-bind:class="{playable}" v-bind:style="dynamicPosition">
+        
     </div>
 </template>
 
@@ -11,6 +12,17 @@ export default {
         cardName: {
             type: String,
             default: 'HA'
+        },
+
+        playable: {
+            type: Boolean,
+            default: false
+        },
+
+        bugger: {
+            type: String,
+            default: 'bug'
+
         }
     },
 
@@ -86,5 +98,19 @@ export default {
     width: 96px;
     height: 132px;
     background-image: url('/images/card-faces.png');
+    border: 1px solid transparent;
+    padding: 2px;
+}
+
+.card:hover {
+    border: 1px solid transparent;
+    padding: 2px;
+    background-color: red;
+}
+
+.playable:hover {
+    border: 1px solid transparent;
+    padding: 2px;
+    background-color: limegreen;
 }
 </style>

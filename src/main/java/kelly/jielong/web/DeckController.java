@@ -73,7 +73,7 @@ public class DeckController {
     public boolean playCard(
             @PathVariable int gameId
             ,@PathVariable int playerId
-            ,@PathVariable Card card) 
+            ,@PathVariable Card card)
     {
         JieLongGamePlay gp = jieLongGame.findGameById(gameId);
         Player p = gp.findPlayerByIdx(playerId);

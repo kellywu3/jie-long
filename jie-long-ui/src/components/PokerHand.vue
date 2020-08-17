@@ -44,19 +44,19 @@ export default {
             }
 
             let num = util.rankToNum(rank);
-            if(num > 7) {
+            if(num > 6) {
                 num--;
-            } else if(num < 7) {
+            } else if(num < 6) {
                 num++;
             }
 
             const suit = cardName.charAt(0);
             const cardCheck = `${suit}${util.numToRank(num)}`;
-            return this.tableCards.includes(cardCheck);
+            const result = this.tableCards.some((rec) => rec.cardName === cardCheck);
+            return result;
         },
 
         handleClick(cardName) {
-            console.log("click:", cardName);
             if(this.isPlayable(cardName)) {
                 console.log("Emitting event");
                 this.$emit('playcard', {seat: this.seat, cardName});

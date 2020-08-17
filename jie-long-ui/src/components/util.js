@@ -34,6 +34,6 @@ exports.rankToNum = (rank) => {
 };
 
 exports.numToRank = (num) => {
-    CARD_RANKS.charAt(num);
-}
+    return CARD_RANKS.charAt(num);
+};
 
